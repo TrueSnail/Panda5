@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ViewModels="clr-namespace:Panda5Maui.ViewModels"
+             x:Class="Panda5Maui.Views.LoginView">
+    <ContentPage.BindingContext>
+        <ViewModels:LoginViewModel />
+    </ContentPage.BindingContext>
+    
+    <VerticalStackLayout
+        Padding="50">
+        <Label 
+            Text="Witaj użytkowniku"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+        <Label
+            Text="{Binding Username}"
+            VerticalOptions="Center"
+            HorizontalOptions="Center" />
+        <Button
+            Text="Daj mnie do apki" 
+            Command="{Binding ButtonPressCommand}"/>
+    </VerticalStackLayout>
+    
+</ContentPage>
