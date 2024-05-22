@@ -1,17 +1,118 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:xcConverters="clr-namespace:XCalendar.Maui.Converters;assembly=XCalendar.Maui"
+             xmlns:Calendar="clr-namespace:XCalendar.Maui.Views;assembly=XCalendar.Maui"
+             xmlns:ViewModels="clr-namespace:Panda5Maui.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Panda5Maui.Views.CalendarView"
              Title="CalendarView">
     <Shell.BackButtonBehavior>
         <BackButtonBehavior IsVisible="False"/>
     </Shell.BackButtonBehavior>
+    <ContentPage.BindingContext>
+        <ViewModels:CalendarViewModel />
+    </ContentPage.BindingContext>
     
+    <ContentPage.Resources>
+        <!--<toolkit:MathExpressionConverter x:Key="MathExpressionConverter" />-->
+        <x:Int32 x:Key="CalendarDayNamesLenght">3</x:Int32>
+        <x:Double x:Key="DaySize">80.0</x:Double>
+        <x:Int32 x:Key="DayInnerSize">50</x:Int32>
+        <Style x:Key="OtherMonthDayStyle" TargetType="Calendar:DayView">
+            <Setter Property="TextColor" Value="#afafaf"/>
+            <Setter Property="BackgroundColor" Value="#2f2f2f"/>
+        </Style>
+        <Style x:Key="CurrentMonthDayStyle" TargetType="Calendar:DayView">
+            <Setter Property="TextColor" Value="#cfcfcf"/>
+            <Setter Property="BackgroundColor" Value="#1f1f1f"/>
+        </Style>
+        <Style x:Key="CurrentDayStyle" TargetType="Calendar:DayView">
+            <Setter Property="TextColor" Value="#ff5f5f"/>
+            <Setter Property="BackgroundColor" Value="#1f1f1f"/>
+        </Style>
+        <Style x:Key="SelectedDayStyle" TargetType="Calendar:DayView">
+            <Setter Property="BackgroundColor" Value="Red"/>
+        </Style>
+    </ContentPage.Resources>
+
     <VerticalStackLayout
-        Padding="50">
+        Padding="50"
+        BackgroundColor="#1a1a1a">
+        
         <Label 
-            Text="Yay"
+            Text="Siema"
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
+        <!--WidthRequest="{Binding Source={DynamicResource DaySize}, Converter={StaticResource MathExpressionConverter}, ConverterParameter='x/2'}"-->
+        <Calendar:CalendarView
+            WidthRequest="560"
+            DayNamesHeightRequest="50"
+            DaysViewHeightRequest="480"
+            Days="{Binding Calendar.Days}"
+            DaysOfWeek="{Binding Calendar.DayNamesOrder}"
+            NavigatedDate="{Binding Calendar.NavigatedDate}">
+
+            <Calendar:CalendarView.DayTemplate>
+                <DataTemplate>
+                    <ContentPage
+                        WidthRequest="{DynamicResource DaySize}"
+                        HeightRequest="{DynamicResource DaySize}"
+                        BackgroundColor="#1a1a1a">
+
+                        <Border
+                            WidthRequest="50"
+                            HeightRequest="50"
+                            Stroke="Transparent">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="100"/>
+                            </Border.StrokeShape>
+                            <Calendar:DayView
+                                DateTime="{Binding DateTime}"
+                                Events="{Binding Events}"
+                                IsCurrentMonth="{Binding IsCurrentMonth}"
+                                IsInvalid="{Binding IsInvalid}"
+                                IsSelected="{Binding IsSelected}"
+                                IsToday="{Binding IsToday}"
+                                HeightRequest="50"
+                                WidthRequest="50"
+                                FontAttributes="Bold">
+                                <Calendar:DayView.OtherMonthStyle>
+                                    <Style TargetType="Calendar:DayView" BaseResourceKey="OtherMonthDayStyle"/>
+                                </Calendar:DayView.OtherMonthStyle>
+                                <Calendar:DayView.CurrentMonthStyle>
+                                    <Style TargetType="Calendar:DayView" BaseResourceKey="CurrentMonthDayStyle"/>
+                                </Calendar:DayView.CurrentMonthStyle>
+                                <Calendar:DayView.TodayStyle>
+                                    <Style TargetType="Calendar:DayView" BaseResourceKey="CurrentDayStyle"/>
+                                </Calendar:DayView.TodayStyle>
+                                <Calendar:DayView.SelectedStyle>
+                                    <Style TargetType="Calendar:DayView" BaseResourceKey="SelectedDayStyle"/>
+                                </Calendar:DayView.SelectedStyle>
+                            </Calendar:DayView>
+                        </Border>
+                    </ContentPage>
+                </DataTemplate>
+            </Calendar:CalendarView.DayTemplate>
+            
+            <!--Currently not used!-->
+            <Calendar:CalendarView.DaysViewTemplate>
+                <ControlTemplate>
+                    <Calendar:DaysView
+                        Content="{Binding Content, Source={RelativeSource TemplatedParent}}"/>
+                </ControlTemplate>
+            </Calendar:CalendarView.DaysViewTemplate>
+
+            <Calendar:CalendarView.DayNameTemplate>
+                <DataTemplate>
+                    <Label
+                        Text="{Binding ., Converter={xcConverters:LocalizeDayOfWeekAndCharLimitConverter}, ConverterParameter={StaticResource CalendarDayNamesLenght}}"
+                        VerticalTextAlignment="Center"
+                        HorizontalTextAlignment="Center"/>
+                </DataTemplate>
+            </Calendar:CalendarView.DayNameTemplate>
+            
+        </Calendar:CalendarView>
+        
     </VerticalStackLayout>
 </ContentPage>
