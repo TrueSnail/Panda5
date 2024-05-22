@@ -17,7 +17,7 @@
     <ContentPage.Resources>
         <!--<toolkit:MathExpressionConverter x:Key="MathExpressionConverter" />-->
         <x:Int32 x:Key="CalendarDayNamesLenght">3</x:Int32>
-        <x:Double x:Key="DaySize">80.0</x:Double>
+        <x:Int32 x:Key="DaySize">80</x:Int32>
         <x:Int32 x:Key="DayInnerSize">50</x:Int32>
         <Style x:Key="OtherMonthDayStyle" TargetType="Calendar:DayView">
             <Setter Property="TextColor" Value="#afafaf"/>
@@ -55,7 +55,7 @@
 
             <Calendar:CalendarView.DayTemplate>
                 <DataTemplate>
-                    <ContentPage
+                    <ContentView
                         WidthRequest="{DynamicResource DaySize}"
                         HeightRequest="{DynamicResource DaySize}"
                         BackgroundColor="#1a1a1a">
@@ -91,7 +91,7 @@
                                 </Calendar:DayView.SelectedStyle>
                             </Calendar:DayView>
                         </Border>
-                    </ContentPage>
+                    </ContentView>
                 </DataTemplate>
             </Calendar:CalendarView.DayTemplate>
             
