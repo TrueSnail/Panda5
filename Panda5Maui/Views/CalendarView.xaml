@@ -4,6 +4,7 @@
              xmlns:xcConverters="clr-namespace:XCalendar.Maui.Converters;assembly=XCalendar.Maui"
              xmlns:Calendar="clr-namespace:XCalendar.Maui.Views;assembly=XCalendar.Maui"
              xmlns:ViewModels="clr-namespace:Panda5Maui.ViewModels"
+             xmlns:Views="clr-namespace:Panda5Maui.Views"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Panda5Maui.Views.CalendarView"
              Title="CalendarView">
@@ -32,7 +33,7 @@
             <Setter Property="BackgroundColor" Value="#1f1f1f"/>
         </Style>
         <Style x:Key="SelectedDayStyle" TargetType="Calendar:DayView">
-            <Setter Property="BackgroundColor" Value="Red"/>
+            <Setter Property="BackgroundColor" Value="#ff5f5f"/>
         </Style>
     </ContentPage.Resources>
 
@@ -74,6 +75,8 @@
                                 IsInvalid="{Binding IsInvalid}"
                                 IsSelected="{Binding IsSelected}"
                                 IsToday="{Binding IsToday}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CalendarViewModel}}, Path=DaySelect}"
+                                CommandParameter="{Binding DateTime}"
                                 HeightRequest="50"
                                 WidthRequest="50"
                                 FontAttributes="Bold">
@@ -95,11 +98,11 @@
                 </DataTemplate>
             </Calendar:CalendarView.DayTemplate>
             
-            <!--Currently not used!-->
             <Calendar:CalendarView.DaysViewTemplate>
                 <ControlTemplate>
                     <Calendar:DaysView
-                        Content="{Binding Content, Source={RelativeSource TemplatedParent}}"/>
+                        Content="{Binding Content, Source={RelativeSource TemplatedParent}}"
+                        BackgroundColor="#1a1a1a"/>
                 </ControlTemplate>
             </Calendar:CalendarView.DaysViewTemplate>
 
@@ -108,7 +111,8 @@
                     <Label
                         Text="{Binding ., Converter={xcConverters:LocalizeDayOfWeekAndCharLimitConverter}, ConverterParameter={StaticResource CalendarDayNamesLenght}}"
                         VerticalTextAlignment="Center"
-                        HorizontalTextAlignment="Center"/>
+                        HorizontalTextAlignment="Center"
+                        FontAttributes="Bold"/>
                 </DataTemplate>
             </Calendar:CalendarView.DayNameTemplate>
             
