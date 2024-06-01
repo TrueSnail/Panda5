@@ -18,14 +18,23 @@ internal class CalendarViewModel : ObservableObject
     };
 
     public Command DaySelect { get; }
+    public Command ChangeMonth { get; }
 
     public CalendarViewModel()
     {
-        DaySelect = new Command<DateTime>((Day) =>
-        {
-            Calendar.SelectedDates.Clear();
-            Calendar.NavigatedDate = Day;
-            Calendar.SelectedDates.Add(Day);
-        });
+        DaySelect = new Command<DateTime>(SelectDay);
+        ChangeMonth = new Command<int>(ChangeNavigatedMonth);
+    }
+    
+    private void SelectDay(DateTime day)
+    {
+        Calendar.SelectedDates.Clear();
+        Calendar.NavigatedDate = day;
+        Calendar.SelectedDates.Add(day);
+    }
+
+    private void ChangeNavigatedMonth(int monthOffset)
+    {
+        Calendar.Navigate(Calendar.NavigatedDate.AddMonths(monthOffset) - Calendar.NavigatedDate);
     }
 }

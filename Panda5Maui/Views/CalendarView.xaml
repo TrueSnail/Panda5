@@ -5,6 +5,7 @@
              xmlns:Calendar="clr-namespace:XCalendar.Maui.Views;assembly=XCalendar.Maui"
              xmlns:ViewModels="clr-namespace:Panda5Maui.ViewModels"
              xmlns:Views="clr-namespace:Panda5Maui.Views"
+             xmlns:Converters="clr-namespace:Panda5Maui.Converters"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="Panda5Maui.Views.CalendarView"
              Title="CalendarView">
@@ -54,13 +55,28 @@
             DaysOfWeek="{Binding Calendar.DayNamesOrder}"
             NavigatedDate="{Binding Calendar.NavigatedDate}">
 
+            <Calendar:CalendarView.NavigationViewTemplate>
+                <ControlTemplate>
+                    <Calendar:NavigationView
+                        Text="{Binding Text, Source={RelativeSource TemplatedParent}, Converter={Converters:FirstCharToUpperConverter}}"
+                        LeftArrowCommand="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CalendarViewModel}}, Path=ChangeMonth}"
+                        RightArrowCommand="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CalendarViewModel}}, Path=ChangeMonth}">
+                        <Calendar:NavigationView.LeftArrowCommandParameter>
+                            <x:Int32>-1</x:Int32>
+                        </Calendar:NavigationView.LeftArrowCommandParameter>
+                        <Calendar:NavigationView.RightArrowCommandParameter>
+                            <x:Int32>1</x:Int32>
+                        </Calendar:NavigationView.RightArrowCommandParameter>
+                    </Calendar:NavigationView>
+                </ControlTemplate>
+            </Calendar:CalendarView.NavigationViewTemplate>
+
             <Calendar:CalendarView.DayTemplate>
                 <DataTemplate>
                     <ContentView
                         WidthRequest="{DynamicResource DaySize}"
                         HeightRequest="{DynamicResource DaySize}"
                         BackgroundColor="#1a1a1a">
-
                         <Border
                             WidthRequest="50"
                             HeightRequest="50"
@@ -110,6 +126,7 @@
                 <DataTemplate>
                     <Label
                         Text="{Binding ., Converter={xcConverters:LocalizeDayOfWeekAndCharLimitConverter}, ConverterParameter={StaticResource CalendarDayNamesLenght}}"
+                        TextColor="White"
                         VerticalTextAlignment="Center"
                         HorizontalTextAlignment="Center"
                         FontAttributes="Bold"/>
