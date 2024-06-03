@@ -15,7 +15,7 @@
     <ContentPage.BindingContext>
         <ViewModels:CalendarViewModel />
     </ContentPage.BindingContext>
-    
+
     <ContentPage.Resources>
         <!--<toolkit:MathExpressionConverter x:Key="MathExpressionConverter" />-->
         <x:Int32 x:Key="CalendarDayNamesLenght">3</x:Int32>
@@ -38,29 +38,34 @@
         </Style>
     </ContentPage.Resources>
 
-    <VerticalStackLayout
+    <Grid
         Padding="50"
-        BackgroundColor="#1a1a1a">
-        
-        <Label 
-            Text="Siema"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+        BackgroundColor="#1a1a1a"
+        ColumnSpacing="50">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
         <!--WidthRequest="{Binding Source={DynamicResource DaySize}, Converter={StaticResource MathExpressionConverter}, ConverterParameter='x/2'}"-->
         <Calendar:CalendarView
-            WidthRequest="560"
+            MaximumWidthRequest="560"
             DayNamesHeightRequest="50"
             DaysViewHeightRequest="480"
             Days="{Binding Calendar.Days}"
             DaysOfWeek="{Binding Calendar.DayNamesOrder}"
-            NavigatedDate="{Binding Calendar.NavigatedDate}">
+            NavigatedDate="{Binding Calendar.NavigatedDate}"
+            Grid.Column="0">
 
             <Calendar:CalendarView.NavigationViewTemplate>
                 <ControlTemplate>
                     <Calendar:NavigationView
                         Text="{Binding Text, Source={RelativeSource TemplatedParent}, Converter={Converters:FirstCharToUpperConverter}}"
-                        LeftArrowCommand="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CalendarViewModel}}, Path=ChangeMonth}"
-                        RightArrowCommand="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CalendarViewModel}}, Path=ChangeMonth}">
+                        LeftArrowCommand="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CalendarViewModel}}, Path=ChangeMonthCommand}"
+                        RightArrowCommand="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CalendarViewModel}}, Path=ChangeMonthCommand}"
+                        FontSize="20"
+                        FontAttributes="Bold"
+                        Padding="0,0,0,10">
                         <Calendar:NavigationView.LeftArrowCommandParameter>
                             <x:Int32>-1</x:Int32>
                         </Calendar:NavigationView.LeftArrowCommandParameter>
@@ -91,11 +96,12 @@
                                 IsInvalid="{Binding IsInvalid}"
                                 IsSelected="{Binding IsSelected}"
                                 IsToday="{Binding IsToday}"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CalendarViewModel}}, Path=DaySelect}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CalendarViewModel}}, Path=DaySelectCommand}"
                                 CommandParameter="{Binding DateTime}"
                                 HeightRequest="50"
                                 WidthRequest="50"
-                                FontAttributes="Bold">
+                                FontAttributes="Bold"
+                                FontSize="14">
                                 <Calendar:DayView.OtherMonthStyle>
                                     <Style TargetType="Calendar:DayView" BaseResourceKey="OtherMonthDayStyle"/>
                                 </Calendar:DayView.OtherMonthStyle>
@@ -113,7 +119,7 @@
                     </ContentView>
                 </DataTemplate>
             </Calendar:CalendarView.DayTemplate>
-            
+
             <Calendar:CalendarView.DaysViewTemplate>
                 <ControlTemplate>
                     <Calendar:DaysView
@@ -129,11 +135,149 @@
                         TextColor="White"
                         VerticalTextAlignment="Center"
                         HorizontalTextAlignment="Center"
-                        FontAttributes="Bold"/>
+                        FontAttributes="Bold"
+                        FontSize="14"/>
                 </DataTemplate>
             </Calendar:CalendarView.DayNameTemplate>
-            
+
         </Calendar:CalendarView>
-        
-    </VerticalStackLayout>
+
+        <ScrollView
+            Grid.Column="1"
+            MaximumWidthRequest="500"
+            Padding="0,0,30,0">
+            <VerticalStackLayout>
+                <Label
+                    Text="{Binding SelectedDateString, Converter={Converters:FirstCharToUpperConverter} }" 
+                    HorizontalTextAlignment="Center" 
+                    FontSize="20"
+                    FontAttributes="Bold"/>
+                <CollectionView ItemsSource="{Binding SelectedDayEvents}">
+                    <CollectionView.EmptyView>
+                        <Label
+                            Text="No events for selected date"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            HorizontalTextAlignment="Center"
+                            TextColor="#afafaf"/>
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout
+                            Orientation="Vertical"
+                            ItemSpacing="10"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                BackgroundColor="#1f1f1f"
+                                StrokeThickness="1"
+                                Stroke="{Binding Color}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="20"/>
+                                </Border.StrokeShape>
+                                <VerticalStackLayout
+                                    Padding="20,15,20,15"
+                                    Spacing="10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="35"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label
+                                            Grid.Column="0"
+                                            FontSize="20"
+                                            FontAttributes="Bold"
+                                            Text="{Binding Title}"
+                                            TextColor="White"/>
+                                        <Border
+                                            Grid.Column="1"
+                                            WidthRequest="35"
+                                            HeightRequest="35"
+                                            BackgroundColor="#2f2f2f"
+                                            Stroke="Transparent">
+                                            <Label
+                                                Text="X"
+                                                TextColor="#ff5f5f"
+                                                FontSize="14"
+                                                FontAttributes="Bold"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center"/>
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="100"/>
+                                            </Border.StrokeShape>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer 
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CalendarViewModel}}, Path=DeleteEventButtonCommand}"
+                                                    CommandParameter="{Binding .}"/>
+                                            </Border.GestureRecognizers>
+                                        </Border>
+                                    </Grid>
+                                    <Label
+                                        FontSize="14"
+                                        FontAttributes="Bold"
+                                        Text="{Binding Description}"
+                                        TextColor="#cfcfcf"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Border                            
+                    BackgroundColor="#1f1f1f"
+                    StrokeThickness="1"
+                    Stroke="#2f2f2f">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20"/>
+                    </Border.StrokeShape>
+                    <VerticalStackLayout
+                        Padding="30"
+                        Spacing="20">
+                        <Label
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Text="Add an Event"
+                            TextColor="White"
+                            HorizontalTextAlignment="Center"/>
+                        <Entry
+                            MaxLength="50"
+                            Placeholder="Title" 
+                            PlaceholderColor="#cfcfcf"
+                            Text="{Binding NewEventTitle}"/>
+                        <Editor
+                            MaxLength="200"
+                            Placeholder="Description" 
+                            PlaceholderColor="#cfcfcf"
+                            Text="{Binding NewEventDescription}"
+                            AutoSize="TextChanges"/>
+                        <Picker 
+                            x:Name="NewEventColorPicker"
+                            Title="Select an event color"
+                            ItemsSource="{Binding NewEventColors}"
+                            SelectedItem="{Binding NewEventColor}">
+                            <Picker.SelectedIndex>0</Picker.SelectedIndex>
+                        </Picker>
+                        <Button
+                            BindingContext="{x:Reference NewEventColorPicker}"
+                            Text="+"
+                            FontSize="30"
+                            TextColor="White"
+                            BorderColor="{Binding SelectedItem}"
+                            BorderWidth="2"
+                            CornerRadius="20"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type ViewModels:CalendarViewModel}}, Path=NewEventButtonCommand}"
+                            BackgroundColor="#2f2f2f"/>
+                        <Label
+                            Text="{Binding NewEventErrorText}"
+                            HorizontalTextAlignment="Center"
+                            TextColor="Red"
+                            FontSize="16"
+                            FontAttributes="Bold"/>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
 </ContentPage>
