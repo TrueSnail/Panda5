@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:ViewModels="clr-namespace:Panda5Maui.ViewModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="Panda5Maui.Views.RegisterView"
+             Title="RegisterView"
              BackgroundColor="#1a1a1a"
-             x:Class="Panda5Maui.Views.LoginView"
-             x:DataType="ViewModels:LoginViewModel">
+             x:DataType="ViewModels:RegisterViewModel">
     <VerticalStackLayout
         MaximumWidthRequest="700"
         Padding="50"
@@ -19,12 +20,34 @@
             HorizontalOptions="FillAndExpand"/>
         <Label 
             Margin="0, -15, 0, 15"
-            Text="Enter your login credentials"
+            Text="Enter your registration credentials"
             FontSize="14"
             HorizontalTextAlignment="Center"
             FontAttributes="Bold"
             VerticalOptions="Center" 
             HorizontalOptions="CenterAndExpand" />
+        <Entry
+            MaxLength="50"
+            Placeholder="Username" 
+            PlaceholderColor="#cfcfcf"
+            Text="{Binding UsernameInput}">
+            <Entry.Behaviors>
+                <toolkit:EventToCommandBehavior
+                    x:TypeArguments="FocusEventArgs"
+                    EventName="Unfocused" 
+                    Command="{Binding VerifyUsernameCommand}"/>
+                <toolkit:EventToCommandBehavior
+                    x:TypeArguments="FocusEventArgs"
+                    EventName="Focused" 
+                    Command="{Binding VerifyUsernameCommand}"/>
+            </Entry.Behaviors>
+        </Entry>
+        <Label 
+            Margin="0, -15, 0, 0"
+            Text="{Binding VerifyUsernameError}"
+            FontSize="12"
+            FontAttributes="Bold"
+            TextColor="#ff5f5f" />
         <Entry
             MaxLength="50"
             Placeholder="Email" 
@@ -70,38 +93,41 @@
             FontSize="12"
             FontAttributes="Bold"
             TextColor="#ff5f5f" />
-        <Grid
-            HorizontalOptions="FillAndExpand"
+        <Entry
+            MaxLength="50"
+            Placeholder="Confirm Password" 
+            PlaceholderColor="#cfcfcf"
+            IsPassword="True"
+            Text="{Binding ConfirmPasswordInput}">
+            <Entry.Behaviors>
+                <toolkit:EventToCommandBehavior
+                    x:TypeArguments="FocusEventArgs"
+                    EventName="Focused" 
+                    Command="{Binding VerifyConfirmPasswordCommand}"/>
+                <toolkit:EventToCommandBehavior
+                    x:TypeArguments="FocusEventArgs"
+                    EventName="Unfocused" 
+                    Command="{Binding VerifyConfirmPasswordCommand}"/>
+            </Entry.Behaviors>
+        </Entry>
+        <Label 
+            Margin="0, -15, 0, 0"
+            Text="{Binding VerifyConfirmPasswordError}"
+            FontSize="12"
+            FontAttributes="Bold"
+            TextColor="#ff5f5f" />
+        <Button
+            BorderWidth="2"
+            BorderColor="#afafaf"
+            CornerRadius="20"
+            TextColor="White"
+            FontAttributes="Bold"
+            Text="Register" 
+            BackgroundColor="#2f2f2f"
             HeightRequest="60"
-            ColumnSpacing="20">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Button
-                Grid.Column="0"
-                BorderWidth="2"
-                BorderColor="#afafaf"
-                CornerRadius="20"
-                TextColor="White"
-                FontAttributes="Bold"
-                HorizontalOptions="FillAndExpand"
-                BackgroundColor="#1f1f1f"
-                Text="Register"
-                Command="{Binding RegisterButtonCommand}"/>
-            <Button
-                Grid.Column="1"
-                BorderWidth="2"
-                BorderColor="#afafaf"
-                CornerRadius="20"
-                TextColor="White"
-                FontAttributes="Bold"
-                Text="Login" 
-                BackgroundColor="#2f2f2f"
-                Command="{Binding LoginButtonCommand}"/>
-        </Grid>
+            Command="{Binding RegisterButtonCommand}"/>
         <Label
-            Text="{Binding LoginError}"
+            Text="{Binding RegisterError}"
             FontSize="16"
             FontAttributes="Bold"
             VerticalOptions="Center"
@@ -109,5 +135,4 @@
             HorizontalTextAlignment="Center"
             TextColor="#ff5f5f"/>
     </VerticalStackLayout>
-
 </ContentPage>

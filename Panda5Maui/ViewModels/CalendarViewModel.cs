@@ -12,13 +12,14 @@ using XCalendar.Core.Models;
 
 namespace Panda5Maui.ViewModels;
 
-internal class CalendarViewModel : ObservableObject
+internal partial class CalendarViewModel : ObservableObject
 {
     public Calendar<CalendarDay<CalendarDayEvent>, CalendarDayEvent> Calendar { get; } = new()
     {
         SelectionAction = XCalendar.Core.Enums.SelectionAction.Modify,
         SelectionType = XCalendar.Core.Enums.SelectionType.Single
     };
+    private IEventProvider EventProvider;
 
     public Command DaySelectCommand { get; }
     public Command ChangeMonthCommand { get; }
@@ -38,12 +39,17 @@ internal class CalendarViewModel : ObservableObject
     public string NewEventTitle { get; set; } = "";
     public string NewEventDescription { get; set; } = "";
     public string NewEventColor { get; set; }
-    public string NewEventErrorText { get; private set; } = "";
+    [ObservableProperty]
+    private string newEventErrorText = "";
+
     public ObservableCollection<CalendarDayEvent> SelectedDayEvents { get; private set; } = [];
     public string SelectedDateString => Calendar.SelectedDates.Count > 0 ? Calendar.SelectedDates[0].ToString("dd MMMM yyyy").TrimStart('0') : "No date was selected ¯\\_(ツ)_/¯";
 
-    public CalendarViewModel()
+    public CalendarViewModel(IEventProvider eventProvider)
     {
+        EventProvider = eventProvider;
+        eventProvider.CalendarEventsUpdated += UpdateCalendarEvents;
+
         NewEventColor = NewEventColors[0];
 
         DaySelectCommand = new Command<DateTime>(DaySelect);
@@ -60,6 +66,13 @@ internal class CalendarViewModel : ObservableObject
         UpdateSelectedDayEvents();
     }
 
+    private void UpdateCalendarEvents(List<CalendarDayEvent> calendarEvents)
+    {
+        Calendar.Events.Clear();
+        foreach (CalendarDayEvent calendarEvent in calendarEvents) Calendar.Events.Add(calendarEvent);
+        UpdateSelectedDayEvents();
+    }
+
     private void UpdateSelectedDayEvents()
     {
         if (Calendar.SelectedDates.Count == 0)
@@ -71,33 +84,31 @@ internal class CalendarViewModel : ObservableObject
         SelectedDayEvents.Clear();
         List<CalendarDayEvent> selectedDayEvents = new(Calendar.Events.Where(dayEvent => Calendar.SelectedDates[0] >= dayEvent.StartDate && dayEvent.EndDate > Calendar.SelectedDates[0]));
         foreach (var item in selectedDayEvents) SelectedDayEvents.Add(item);
-
     }
 
     private void NewEventButton()
     {
         if (Calendar.SelectedDates.Count < 1) NewEventErrorText = "No date selected";
-        else if (NewEventTitle.Trim().Length < 1) NewEventErrorText = "Plese fill event title";
+        else if (NewEventTitle.Trim().Length < 1) NewEventErrorText = "Plese fill in event title";
         else
         {
-            Calendar.Events.Add(new CalendarDayEvent()
+            var calendarDay = new CalendarDayEvent()
             {
                 Title = NewEventTitle,
                 Description = NewEventDescription,
                 StartDate = Calendar.SelectedDates[0],
                 EndDate = Calendar.SelectedDates[0].AddDays(1),
                 Color = Color.Parse(NewEventColor)
-            });
+            };
+            EventProvider.AddEvent(calendarDay);
             NewEventErrorText = "";
-            UpdateSelectedDayEvents();
         }
-        OnPropertyChanged(nameof(NewEventErrorText));
     }
 
     private void DeleteEventButton(CalendarDayEvent calendarDayEvent)
     {
         Calendar.Events.Remove(calendarDayEvent);
-        UpdateSelectedDayEvents();
+        EventProvider.RemoveEvent(calendarDayEvent);
     }
 
     private void DaySelect(DateTime day)

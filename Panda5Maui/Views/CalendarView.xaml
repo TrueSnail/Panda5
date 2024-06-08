@@ -12,9 +12,6 @@
     <Shell.BackButtonBehavior>
         <BackButtonBehavior IsVisible="False"/>
     </Shell.BackButtonBehavior>
-    <ContentPage.BindingContext>
-        <ViewModels:CalendarViewModel />
-    </ContentPage.BindingContext>
 
     <ContentPage.Resources>
         <!--<toolkit:MathExpressionConverter x:Key="MathExpressionConverter" />-->
@@ -159,7 +156,8 @@
                             FontSize="14"
                             FontAttributes="Bold"
                             HorizontalTextAlignment="Center"
-                            TextColor="#afafaf"/>
+                            TextColor="#afafaf"
+                            Padding="0, 10, 0, 20"/>
                     </CollectionView.EmptyView>
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout
@@ -270,7 +268,7 @@
                         <Label
                             Text="{Binding NewEventErrorText}"
                             HorizontalTextAlignment="Center"
-                            TextColor="Red"
+                            TextColor="#ff5f5f"
                             FontSize="16"
                             FontAttributes="Bold"/>
                     </VerticalStackLayout>
